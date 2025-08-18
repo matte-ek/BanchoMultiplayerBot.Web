@@ -1,0 +1,122 @@
+﻿@page "/lobby/{LobbyId:int}"
+@using BanchoMultiplayerBot.Web.Constants
+@using BanchoMultiplayerBot.Web.Services
+
+@inject LobbyService LobbyService
+
+<MudContainer Class="mt-14">
+    <MudText Typo="Typo.h4">@State.Name</MudText>
+
+    @if ((int)State.Health <= (int)LobbyHealth.Initializing && State.Health != LobbyHealth.EventTimeoutReached)
+    {
+        <MudText>Please wait while the lobby is being initialized, current state: @(State.Health.ToString())</MudText>
+    }
+    else
+    {
+        <MudGrid Class="mt-2">
+            
+            @if (State.Health == LobbyHealth.EventTimeoutReached)
+            {
+                <MudItem xs="12" sm="12">
+                    <MudAlert Severity="Severity.Error">The lobby seems to have been shut down by Bancho due to inactivity.</MudAlert>
+                </MudItem>
+            }
+
+            @if (State.Behaviors?.Contains("MapManagerBehavior") == false)
+            {
+                <MudItem xs="12" sm="12">
+                    <MudAlert Severity="Severity.Warning">The lobby does not contain the map manager behavior, functionality is restricted.</MudAlert>
+                </MudItem>
+            }
+
+            <MudItem xs="12" sm="12">
+                <MudCard>
+                    <MudCardContent>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" Href=@($"lobby/{State.Id}/configure")>Configure</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Info">History</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Error">Leave</MudButton>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudCard>
+                    <MudCardContent
+                        Style="@($"background-image: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.6) 100%), url(https://assets.ppy.sh/beatmaps/{State.Beatmap?.SetId ?? 0}/covers/cover.jpg);background-position: center;background-size: cover;")">
+                        <MudText Typo="Typo.body2">Beatmap</MudText>
+                        <MudText Typo="Typo.h5" Class="mt-1">@(State.Beatmap?.Name ?? "N/A")</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="3">
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body2">Players</MudText>
+                        <MudText Typo="Typo.h5" Class="mt-1">@State.PlayerCount/@State.PlayerCapacity</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="3">
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body2">Host</MudText>
+                        <MudStack Row="true" Class="mt-1" AlignItems="AlignItems.Center">
+                            <MudImage Src="@($"http://s.ppy.sh/a/{State.Host?.OsuId ?? 0}")" Width="32" Height="32" Class="rounded-lg"/>
+                            <MudText Typo="Typo.h5">@(State.Host?.Name ?? "N/A")</MudText>
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudCard Style="height: 40em">
+                    <MudCardContent>
+                        <div @ref="_chatBox" style="height: 32.7em;overflow: auto;position: relative;display: flex;flex-direction: column;">
+                            @foreach (var message in Messages)
+                            {
+                                <MudStack Row="true" Spacing="1">
+                                    <MudText Typo="Typo.body2" Style="color: #919191">@message.Timestamp.ToLocalTime().ToShortTimeString()</MudText>
+                                    <MudText Typo="Typo.body2" Color="@GetMessageColor(message)" Style="font-weight: bold">
+                                        @message.Author
+                                    </MudText>
+                                    <MudText Typo="Typo.body2">@message.Content</MudText>
+                                </MudStack>
+                            }
+
+                            <MudOverlay Visible="_isRequestingMessages" DarkBackground="false" Absolute="true">
+                                <MudProgressCircular Indeterminate="true" Color="Color.Primary"/>
+                            </MudOverlay>
+                        </div>
+                        <div>
+                            <MudTextField T="string" Variant="Variant.Filled" Label="Send a message..."
+                                          Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Send"
+                                          AdornmentColor="Color.Primary" @onkeydown="OnChatboxKeyPress"
+                                          @bind-Value="ChatMessage" Immediate="true" Class="mt-3"/>
+                        </div>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudCard Style="height: 40em">
+                    <MudCardContent>
+                        <MudStack>
+                            @if (State.Players != null)
+                            {
+                                @foreach (var player in State.Players)
+                                {
+                                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                                        <MudImage Src=@($"https://s.ppy.sh/a/{player.OsuId ?? 0}") Width="48" Height="48" Class="rounded-lg" Elevation="2"/>
+                                        <MudText Typo="Typo.body1">@player.Name</MudText>
+                                    </MudStack>
+                                }
+                            }
+                        </MudStack>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>

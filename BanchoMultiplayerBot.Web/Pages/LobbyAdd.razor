@@ -1,0 +1,120 @@
+﻿@page "/lobby-add"
+@using BanchoMultiplayerBot.Web.Services
+@inject LobbyService LobbyService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudText Typo="Typo.h4" Class="ma-8">Add new lobby...</MudText>
+<MudPaper Class="ma-8 pa-8">
+    <MudText>Note: Bancho only allows four tournament lobbies running at the same time per account.</MudText>
+    <MudText>Available lobbies left: @((4 - LobbyService.Lobbies.Count).ToString())</MudText>
+</MudPaper>
+<MudPaper Class="ma-8 pa-8" Style="position:relative;">
+    <MudForm Style="max-width: 40em;margin-top: 1em" Spacing="3">
+
+        <MudTextField
+            T="string"
+            Label="Name"
+            Required="true"
+            RequiredError="Lobby name is required"
+            Variant="Variant.Filled"
+            @bind-Value="Name"
+            Disabled="@_isCreatingRoom"/>
+
+        <MudTextField
+            T="string"
+            Label="Lobby Channel"
+            Required="false"
+            HelperText="Format as '#mp_123456', if empty a new lobby will be created."
+            Variant="Variant.Filled"
+            @bind-Value="ChannelName"
+            Disabled="@_isCreatingRoom"/>
+
+        <MudSelect
+            T="string"
+            Label="Preset"
+            Variant="Variant.Filled"
+            Value="SelectedPreset"
+            ValueChanged="OnPresetSelected"
+            HelperText="@_presetHelpText"
+            Disabled="@_isCreatingRoom">
+            @foreach (var preset in _presets)
+            {
+                <MudSelectItem Value="preset">@preset</MudSelectItem>
+            }
+        </MudSelect>
+
+    </MudForm>
+    <MudButton
+        Variant="Variant.Filled"
+        Color="Color.Success"
+        Class="mt-4"
+        Disabled="@_isCreatingRoom"
+        OnClick="OnCreateRoom">
+        Add
+    </MudButton>
+    
+    <MudOverlay Visible="@_isCreatingRoom" Absolute="true">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+    </MudOverlay>
+</MudPaper>
+
+@code {
+    private string Name { get; set; } = string.Empty;
+    private string? ChannelName { get; set; }
+    private string? SelectedPreset { get; set; }
+
+    private string? _presetHelpText;
+    private bool _isCreatingRoom;
+
+    private readonly string[] _presets =
+    [
+        "None",
+        "Auto Host Rotate",
+        "Auto Host Rotate Dynamic"
+    ];
+
+    private readonly string[] _presetHelpTexts =
+    [
+        string.Empty,
+        "Lobby will be created with the behaviors required for auto host rotate.",
+        "Lobby will be created with the behaviors required for auto host rotate and the DynamicRoom behavior."
+    ];
+
+    private void OnPresetSelected(string selectedValue)
+    {
+        SelectedPreset = selectedValue;
+        _presetHelpText = _presetHelpTexts[_presets.ToList().FindIndex(x => x == selectedValue)];
+    }
+
+    private async Task OnCreateRoom()
+    {
+        if (string.IsNullOrEmpty(Name))
+        {
+            Snackbar.Add("Missing lobby name", Severity.Error);
+            return;
+        }
+
+        if (LobbyService.Lobbies.Count >= 4)
+        {
+            Snackbar.Add("Too many lobbies, please remove one.", Severity.Error);
+            return;
+        }
+        
+        _isCreatingRoom = true;
+
+        await LobbyService.CreateLobby(Name, string.IsNullOrEmpty(ChannelName) ? null : ChannelName).ContinueWith(async task =>
+        {
+            var id = await task;
+            
+            if (id == null)
+            {
+                Snackbar.Add("Lobby could not be created.", Severity.Error);
+            }
+
+            Snackbar.Add("Lobby created successfully!", Severity.Success);
+            
+            NavigationManager.NavigateTo($"lobby/{id}");
+        });
+    }
+}

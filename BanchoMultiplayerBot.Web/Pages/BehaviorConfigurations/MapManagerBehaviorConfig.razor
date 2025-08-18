@@ -1,0 +1,38 @@
+﻿@using BanchoMultiplayerBot.Web.Data.BehaviorConfig
+@using BanchoMultiplayerBot.Web.Services
+@inject BehaviorService BehaviorService
+
+<MudCard>
+    <MudCardContent>
+        <MudStack Spacing="1">
+            <MudCheckBox Value="BehaviorConfigModel.LimitStarRating" Label="Limit star rating" Color="Color.Primary"/>
+            <MudStack Row="true">
+                <MudNumericField Value="BehaviorConfigModel.MinimumStarRating" Label="Minimum" Variant="Variant.Filled" Min="0" Max="10"/>
+                <MudNumericField Value="BehaviorConfigModel.MaximumStarRating" Label="Maximum" Variant="Variant.Filled" Min="0" Max="10"/>
+            </MudStack>
+            <MudNumericField Value="BehaviorConfigModel.StarRatingErrorMargin" Label="Star rating error margin" Variant="Variant.Filled" Min="0" Max="10"/>
+            <MudCheckBox Value="BehaviorConfigModel.LimitMapLength" Label="Limit map length" Color="Color.Primary"/>
+            <MudStack Row="true">
+                <MudNumericField Value="BehaviorConfigModel.MinimumMapLength" Label="Minimum" Variant="Variant.Filled" Min="0"/>
+                <MudNumericField Value="BehaviorConfigModel.MaximumMapLength" Label="Maximum" Variant="Variant.Filled" Min="0"/>
+            </MudStack>
+            <MudCheckBox Value="BehaviorConfigModel.AutomaticallySkipHostViolations" Label="Automatically skip host violations" Color="Color.Primary"/>
+            <MudNumericField Value="BehaviorConfigModel.MaximumHostViolations" Label="Maximum host violations" Variant="Variant.Filled" Min="1"/>
+            <MudCheckBox Value="BehaviorConfigModel.AllowDoubleTime" Label="Allow double time" Color="Color.Primary"/>
+        </MudStack>
+    </MudCardContent>
+</MudCard>
+
+@code {
+
+    [Parameter]
+    public int LobbyId { get; set; }
+    
+    private MapManagerBehaviorConfigModel BehaviorConfigModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        BehaviorConfigModel = await BehaviorService.GetConfiguration<MapManagerBehaviorConfigModel?>(LobbyId, "MapManagerBehavior") ?? new();
+        await base.OnInitializedAsync();
+    }
+}

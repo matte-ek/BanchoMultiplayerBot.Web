@@ -1,0 +1,68 @@
+﻿@using BanchoMultiplayerBot.Web.Services
+@inherits LayoutComponentBase
+@inject AuthService Auth
+@inject LobbyService LobbyService
+
+<MudThemeProvider IsDarkMode="true" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    @if (!Auth.State.IsAuthenticated)
+    {
+        <div style="width: 50%;margin: 20em auto auto;">
+            @if (_isLoadingEssentials)
+            {
+                <MudText>Please wait...</MudText>
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-2" />
+            }
+            else
+            {
+                <MudText>Please login to continue.</MudText>
+                <MudButton Variant="Variant.Text" OnClick="Login" Class="mt-4" Style="color: #ff66aa;border: 1px solid #ff66aa;width: 15em;">Login with osu!</MudButton>
+            }
+        </div>  
+    }
+    else
+    {
+        <MudAppBar Elevation="0">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
+        </MudAppBar>
+        <MudDrawer @bind-Open="@_drawerOpen">
+            <NavMenu/>
+        </MudDrawer>
+        <MudMainContent>
+            @Body
+        </MudMainContent>   
+    }
+</MudLayout>
+
+@code {
+    bool _drawerOpen = true;
+    bool _isLoadingEssentials = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    void Login()
+    {
+        Auth.Authenticate();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Auth.Validate();
+
+        if (Auth.State.IsAuthenticated)
+        {
+            await LobbyService.GetLobbies();
+        }
+        
+        _isLoadingEssentials = false;
+        
+        await base.OnInitializedAsync();
+    }
+}

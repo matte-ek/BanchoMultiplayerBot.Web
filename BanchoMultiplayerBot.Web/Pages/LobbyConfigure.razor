@@ -1,0 +1,148 @@
+﻿@page "/lobby/{LobbyId:int}/configure"
+@using BanchoMultiplayerBot.Web.Pages.BehaviorConfigurations
+@inject ISnackbar Snackbar
+
+<MudContainer Class="mt-14">
+    <MudText Typo="Typo.h4">Configure @State.Name</MudText>
+
+    <MudGrid Class="mt-2">
+        <MudItem xs="12" sm="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudButton Color="Color.Primary">Refresh State</MudButton>
+                    <MudButton Color="Color.Primary">Refresh Channel State</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudStack Spacing="4">
+                        <MudTextField T="string" Variant="Variant.Filled" Label="Name" Value="ConfigurationModel.Name"/>
+                        <MudTextField T="string" Variant="Variant.Filled" Label="Password" Value="ConfigurationModel.Password"/>
+
+                        <MudSelect T="int" Variant="Variant.Filled" Label="Mode" Value="ConfigurationModel.Mode">
+                            @foreach (var (gameMode, index) in _gameModes.Select((index, gameMode) => (index, gameMode)))
+                            {
+                                <MudSelectItem T="int" Value="@index">@gameMode</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudSelect T="int" Variant="Variant.Filled" Label="Team Mode" Value="ConfigurationModel.TeamMode">
+                            @foreach (var (teamMode, index) in _teamModes.Select((index, teamMode) => (index, teamMode)))
+                            {
+                                <MudSelectItem T="int" Value="@index">@teamMode</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudSelect T="int" Variant="Variant.Filled" Label="Score Mode" Value="ConfigurationModel.ScoreMode">
+                            @foreach (var (scoreMode, index) in _scoreModes.Select((index, scoreMode) => (index, scoreMode)))
+                            {
+                                <MudSelectItem T="int" Value="@index">@scoreMode</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudSelect T="string" Variant="Variant.Filled" Label="Mods" SelectedValues="ConfigurationModel.Mods" MultiSelection="true">
+                            @foreach (var mods in _mods)
+                            {
+                                <MudSelectItem Value="@mods">@mods</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudNumericField T="int?" Variant="Variant.Filled" Label="Size" Min="1" Max="16" Value="ConfigurationModel.Size"/>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudGrid>
+                @if (ConfigurationModel.Behaviours != null && ConfigurationModel.Behaviours.Contains("MapManagerBehavior"))
+                {
+                    <MudItem xs="12" sm="12">
+                        <MapManagerBehaviorConfig LobbyId="LobbyId"/>
+                    </MudItem> 
+                }
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudStack Spacing="4">
+                        <MudSelect T="string" Variant="Variant.Filled" Label="Behaviors:" Immediate="true" @bind-SelectedValues="_tempSelectedBehaviors" MultiSelection="true" OnClose="OnBehaviorSelectionClosed">
+                            @foreach (var behavior in _behaviors)
+                            {
+                                <MudSelectItem Value="@behavior">@behavior</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+    <MudButton Variant="Variant.Filled" Color="Color.Success" Class="mt-6">Save</MudButton>
+</MudContainer>
+
+@* ReSharper disable once NotAccessedField.Compiler *@
+@code {
+
+    private readonly string[] _gameModes =
+    [
+        "osu!standard",
+        "osu!mania",
+        "osu!taiko",
+        "osu!catch"
+    ];
+    
+    private readonly string[] _teamModes =
+    [
+        "Head To Head",
+        "Tag Coop",
+        "Team Vs",
+        "Tag Team Vs",
+    ];
+    
+    private readonly string[] _scoreModes =
+    [
+        "Score",
+        "Accuracy",
+        "Combo",
+        "ScoreV2"
+    ];
+
+    private readonly string[] _mods =
+    [
+        "Freemod",
+        "Easy",
+        "NoFail",
+        "HalfTime",
+        "HardRock",
+        "SuddenDeath",
+        "Perfect",
+        "DoubleTime",
+        "Hidden",
+        "FadeIn",
+        "Flashlight",
+        "Autopilot",
+        "Relax",
+        "SpunOut"
+    ];
+
+    private readonly string[] _behaviors =
+    [
+        "AbortVoteBehavior",
+        "AntiAfkBehavior",
+        "AutoStartBehavior",
+        "FunCommandsBehavior",
+        "HostQueueBehavior",
+        "MapManagerBehavior",
+        "DynamicRoomBehavior",
+    ];
+    
+    // A list of behaviors with a configuration
+    private readonly string[] _behaviorConfigList =
+    [
+        "AutoStartBehavior",
+        "MapManagerBehavior"
+    ];
+
+}

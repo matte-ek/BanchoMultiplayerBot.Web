@@ -1,0 +1,68 @@
+﻿@page "/"
+@using BanchoMultiplayerBot.Web.Services
+@inject HealthService HealthService
+@inject LobbyService LobbyService
+
+<PageTitle>Dashboard</PageTitle>
+
+<MudGrid Class="pa-8">
+    <MudItem xs="12" sm="4">
+        <MudCard>
+            <MudCardContent style="position: relative;">
+                <MudText Typo="Typo.body2">Bancho Connection</MudText>
+                <MudText Typo="Typo.h4" Class="pt-2">@(_banchoHealth)</MudText>
+                
+                <MudOverlay Visible="_isRequestingHealthData" Absolute="true" DarkBackground="true">
+                    <MudProgressCircular Indeterminate="true"></MudProgressCircular>
+                </MudOverlay>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.body2">Players</MudText>
+                <MudText Typo="Typo.h4" Class="pt-2">@($"{LobbyService.Lobbies.Sum(x => x.PlayerCount)}/{LobbyService.Lobbies.Sum(x => x.PlayerCapacity)}")</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.body2">Lobbies</MudText>
+                <MudText Typo="Typo.h4" Class="pt-2">@($"{LobbyService.Lobbies.Count}/4")</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12">
+        <MudCard> 
+            <MudCardContent>
+                <MudCard Outlined="true" Style="height: 600px;background-color: #303038">
+                    <MudCardContent>
+                        <MudText Typo="Typo.body2">N/A</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+
+    private bool _isRequestingHealthData = true;
+    
+    private string _banchoHealth = "N/A";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _ = HealthService.GetState().ContinueWith(_ =>
+        {
+            _banchoHealth = HealthService.State.IsBanchoConnected ? "OK" : "Error";
+            _isRequestingHealthData = false;
+            StateHasChanged();
+        });
+        
+        await base.OnInitializedAsync();
+    }
+
+}
