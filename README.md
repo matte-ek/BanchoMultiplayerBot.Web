@@ -1,6 +1,6 @@
 # BanchoMultiplayerBot.Web
 
-A web frontend for the [BanchoMultiplayerBot](https://github.com/matte-ek/BanchoMultiplayerBot) osu! bot written with .NET Blazor WASM with [MudBlazor](https://mudblazor.com/).
+A web frontend for the [BanchoMultiplayerBot](https://github.com/matte-ek/BanchoMultiplayerBot) osu! bot written with .NET Blazor WASM and [MudBlazor](https://mudblazor.com/).
 
 Currently a work in progress.
 
