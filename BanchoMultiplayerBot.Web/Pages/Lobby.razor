@@ -44,7 +44,7 @@
                     <MudCardContent
                         Style="@($"background-image: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.6) 100%), url(https://assets.ppy.sh/beatmaps/{State.Beatmap?.SetId ?? 0}/covers/cover.jpg);background-position: center;background-size: cover;")">
                         <MudText Typo="Typo.body2">Beatmap</MudText>
-                        <MudText Typo="Typo.h5" Class="mt-1">@(State.Beatmap?.Name ?? "N/A")</MudText>
+                        <MudLink Color="Color.Default" Typo="Typo.h5" Class="mt-1" Href="@($"https://osu.ppy.sh/b/{State.Beatmap?.Id ?? 0}")">@($"{State.Beatmap?.Artist ?? "N/A"} - {State.Beatmap?.Name ?? "N/A"}")</MudLink>
                     </MudCardContent>
                 </MudCard>
             </MudItem>
@@ -100,7 +100,7 @@
             </MudItem>
 
             <MudItem xs="12" sm="6">
-                <MudCard Style="height: 40em">
+                <MudCard Style="height: 40em;overflow: auto;">
                     <MudCardContent>
                         <MudStack>
                             @if (State.Players != null)
@@ -108,8 +108,8 @@
                                 @foreach (var player in State.Players)
                                 {
                                     <MudStack Row="true" AlignItems="AlignItems.Center">
-                                        <MudImage Src=@($"https://s.ppy.sh/a/{player.OsuId ?? 0}") Width="48" Height="48" Class="rounded-lg" Elevation="2"/>
-                                        <MudText Typo="Typo.body1">@player.Name</MudText>
+                                        <MudImage Src=@($"https://s.ppy.sh/a/{player.OsuId ?? 1}") Width="48" Height="48" Class="rounded-lg" Elevation="2"/>
+                                        <MudLink Color="Color.Primary" Typo="Typo.body1" Href="@($"https://osu.ppy.sh/users/{player.OsuId}")">@player.Name</MudLink>
                                     </MudStack>
                                 }
                             }

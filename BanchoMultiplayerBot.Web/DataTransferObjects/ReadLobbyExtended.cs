@@ -9,8 +9,8 @@ public record struct ReadLobbyExtended(
     LobbyHealth Health,
     int PlayerCount,
     int PlayerCapacity,
-    BeatmapInfoModel BeatmapInfo,
-    IEnumerable<string>? Behaviors,
-    IEnumerable<PlayerModel>? Players,
+    BeatmapInfoModel Beatmap,
+    List<string>? Behaviors,
+    List<PlayerModel>? Players,
     PlayerModel? Host
     );

@@ -9,8 +9,6 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Configuration.AddJsonFile("configuration.json");
-
 builder.Services.AddMudServices();
 builder.Services.AddScoped(_ => new HttpClient(new CookieAuthenticationHandler()));
 
@@ -21,6 +19,7 @@ builder.Services
     .AddScoped<HealthService>()
     .AddScoped<MessageService>()
     .AddScoped<BehaviorService>()
+    .AddScoped<EventsService>()
     .AddScoped<LobbyService>();
 
 await builder.Build().RunAsync();

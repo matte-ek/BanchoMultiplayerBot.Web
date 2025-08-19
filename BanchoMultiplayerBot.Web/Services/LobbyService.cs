@@ -11,6 +11,10 @@ public class LobbyService(
 {
     public List<LobbyState> Lobbies { get; } = [];
 
+    public event Action? OnLobbyUpdated;
+
+    public void TriggerLobbyPageRefresh() => OnLobbyUpdated?.Invoke();
+    
     public async Task<LobbyConfigurationModel> GetConfiguration(int id)
     {
         var response = await apiService.Get<LobbyConfigurationModel?>($"api/lobby/{id}/config");
@@ -50,7 +54,7 @@ public class LobbyService(
         lobby.PlayerCount = response.Value.PlayerCount;
         lobby.PlayerCapacity = response.Value.PlayerCapacity;
         lobby.Players = response.Value.Players;
-        lobby.Beatmap = response.Value.BeatmapInfo;
+        lobby.Beatmap = response.Value.Beatmap;
         lobby.Behaviors = response.Value.Behaviors;
         lobby.Host = response.Value.Host;
         lobby.HasExtended = true;

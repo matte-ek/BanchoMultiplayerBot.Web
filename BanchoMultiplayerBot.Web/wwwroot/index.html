@@ -32,7 +32,7 @@
     <script src="_content/MudBlazor/MudBlazor.min.js?v=1"></script>
     <script>
         window.chatbox = {
-            scrollToBottomIfNearEnd: (element, threshold = 10) => {
+            scrollToBottomIfNearEnd: (element, threshold = 50) => {
                 if (!element) return;
     
                 const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < threshold;

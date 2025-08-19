@@ -8,7 +8,7 @@ using MudBlazor;
 
 namespace BanchoMultiplayerBot.Web.Pages;
 
-public partial class Lobby(ISnackbar snackbar, LobbyService lobbyService, MessageService messageService, IJSRuntime jsRuntime) : ComponentBase
+public partial class Lobby(LobbyService lobbyService, MessageService messageService, IJSRuntime jsRuntime) : ComponentBase
 {
     [Parameter]
     public int LobbyId { get; set; }
@@ -21,6 +21,17 @@ public partial class Lobby(ISnackbar snackbar, LobbyService lobbyService, Messag
     private bool _isRequestingMessages = true;
 
     private ElementReference _chatBox;
+
+    protected override async Task OnInitializedAsync()
+    {
+        LobbyService.OnLobbyUpdated += async () =>
+        {
+            StateHasChanged();
+            await jsRuntime.InvokeVoidAsync("chatbox.scrollToBottomIfNearEnd", _chatBox);
+        };
+        
+        await base.OnInitializedAsync();
+    }
     
     protected override async Task OnParametersSetAsync()
     {
@@ -38,42 +49,32 @@ public partial class Lobby(ISnackbar snackbar, LobbyService lobbyService, Messag
         _ = messageService.GetMessages(LobbyId).ContinueWith(async _ =>
         {
             _isRequestingMessages = false;
-            
             StateHasChanged();
-            
             await jsRuntime.InvokeVoidAsync("chatbox.scrollToBottom", _chatBox);
         });
         
         await base.OnParametersSetAsync();
     }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await jsRuntime.InvokeVoidAsync("chatbox.scrollToBottomIfNearEnd", _chatBox);
-    }
     
-    private void OnChatboxKeyPress(KeyboardEventArgs args)
+    private async Task OnChatboxKeyPress(KeyboardEventArgs args)
     {
-        if (args.Key != "Enter")
+        if (args.Key != "Enter" || string.IsNullOrEmpty(ChatMessage))
         {
             return;
         }
-        
-        if (string.IsNullOrEmpty(ChatMessage))
-        {
-            return;
-        }
+
+        await messageService.Send(LobbyId, ChatMessage);
         
         ChatMessage = string.Empty;
         
         StateHasChanged();
     }
 
-    private Color GetMessageColor(ReadMessage message)
+    private static Color GetMessageColor(ReadMessage message)
     {
         if (message.IsAdministratorMessage)
         {
-            return Color.Primary;
+            return Color.Secondary;
         }
 
         if (message.IsBanchoMessage)

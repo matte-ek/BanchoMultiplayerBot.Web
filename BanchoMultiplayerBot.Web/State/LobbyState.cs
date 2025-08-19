@@ -6,6 +6,8 @@ namespace BanchoMultiplayerBot.Web.State;
 public class LobbyState(int id, string name, LobbyHealth health, int playerCount, int playerCapacity)
 {
     public bool HasExtended { get; set; }
+    
+    public bool IsInMatch { get; set; }
 
     public int Id { get; set; } = id;
 
@@ -21,7 +23,7 @@ public class LobbyState(int id, string name, LobbyHealth health, int playerCount
 
     public IEnumerable<string>? Behaviors { get; set; }
 
-    public IEnumerable<PlayerModel>? Players { get; set; }
+    public List<PlayerModel>? Players { get; set; }
 
     public PlayerModel? Host { get; set; }
 }
