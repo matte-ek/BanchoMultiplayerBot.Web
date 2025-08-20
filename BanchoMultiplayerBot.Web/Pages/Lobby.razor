@@ -77,8 +77,8 @@
                             @foreach (var message in Messages)
                             {
                                 <MudStack Row="true" Spacing="1">
-                                    <MudText Typo="Typo.body2" Style="color: #919191">@message.Timestamp.ToLocalTime().ToShortTimeString()</MudText>
-                                    <MudText Typo="Typo.body2" Color="@GetMessageColor(message)" Style="font-weight: bold">
+                                    <MudText Typo="Typo.body2" Style="color: #656565">@message.Timestamp.ToLocalTime().ToShortTimeString()</MudText>
+                                    <MudText Typo="Typo.body2" Color="@GetMessageColor(message)" Style="font-weight: bold;color: #e2e2e2">
                                         @message.Author
                                     </MudText>
                                     <MudText Typo="Typo.body2">@message.Content</MudText>

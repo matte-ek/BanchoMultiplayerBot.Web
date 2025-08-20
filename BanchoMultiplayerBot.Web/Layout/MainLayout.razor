@@ -1,10 +1,11 @@
 ﻿@using BanchoMultiplayerBot.Web.Services
+@using MudBlazor.Utilities
 @inherits LayoutComponentBase
 @inject AuthService Auth
 @inject LobbyService LobbyService
 @inject EventsService EventsService
 
-<MudThemeProvider IsDarkMode="true" />
+<MudThemeProvider IsDarkMode="true" Theme="_customTheme"/>
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -42,6 +43,28 @@
 @code {
     bool _drawerOpen = true;
     bool _isLoadingEssentials = true;
+
+    readonly MudTheme _customTheme = new()
+    {
+        PaletteDark = new PaletteDark
+        {
+            Surface = new MudColor(31, 31, 37, 255),
+            Background = new MudColor(23, 23, 29, 255),
+            DrawerBackground = new MudColor(28, 28, 35, 255),
+            AppbarBackground = new MudColor(28, 28, 35, 255)
+        },
+        Typography = new Typography()
+        {
+            Body1 = new Body1Typography()
+            {
+                FontSize =  "14px"
+            },
+            Body2 = new Body2Typography()
+            {
+                FontSize = "13px"
+            }
+        }
+    };
 
     void DrawerToggle()
     {
