@@ -37,6 +37,6 @@ public class AuthService(
 
     public void Authenticate()
     {
-        navigationManager.NavigateTo(appConfiguration.BackendUri + "api/auth/osu");
+        navigationManager.NavigateTo(appConfiguration.BackendUri + "api/auth/osu", true);
     }
 }
