@@ -4,7 +4,7 @@
 
 @inject LobbyService LobbyService
 
-<MudContainer Class="mt-14">
+<MudContainer Class="mt-14" Style="max-width: 1400px;">
     <MudText Typo="Typo.h4">@State.Name</MudText>
 
     @if ((int)State.Health <= (int)LobbyHealth.Initializing && State.Health != LobbyHealth.EventTimeoutReached)

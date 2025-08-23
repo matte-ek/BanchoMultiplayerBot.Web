@@ -66,7 +66,18 @@ public class EventsService(AppConfiguration appConfiguration, MessageService mes
             lobbyService.TriggerLobbyPageRefresh();
         });
         
-        _hubConnection.On<int>("onBeatmapChanged", async lobbyId =>
+        _hubConnection.On<int, object>("onBeatmapChanged", async (lobbyId, _) =>
+        {
+            if (0 >= lobbyId || lobbyId >= lobbyService.Lobbies.Count)
+            {
+                return;
+            }
+
+            await lobbyService.GetLobbyExtended(lobbyId);
+            lobbyService.TriggerLobbyPageRefresh();
+        });
+        
+        _hubConnection.On<int, object>("onSettingsUpdated", async (lobbyId, _) =>
         {
             if (0 >= lobbyId || lobbyId >= lobbyService.Lobbies.Count)
             {
