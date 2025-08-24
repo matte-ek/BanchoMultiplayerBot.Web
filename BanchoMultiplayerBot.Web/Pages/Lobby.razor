@@ -4,7 +4,7 @@
 
 @inject LobbyService LobbyService
 
-<MudContainer Class="mt-14" Style="max-width: 1400px;">
+<MudContainer Class="mt-14" Style="max-width: 1500px;">
     <MudText Typo="Typo.h4">@State.Name</MudText>
 
     @if ((int)State.Health <= (int)LobbyHealth.Initializing && State.Health != LobbyHealth.EventTimeoutReached)
@@ -63,7 +63,7 @@
                     <MudCardContent>
                         <MudText Typo="Typo.body2">Host</MudText>
                         <MudStack Row="true" Class="mt-1" AlignItems="AlignItems.Center">
-                            <MudImage Src="@($"http://s.ppy.sh/a/{State.Host?.OsuId ?? 0}")" Width="32" Height="32" Class="rounded-lg"/>
+                            <MudImage Src="@($"http://s.ppy.sh/a/{State.Host?.OsuId ?? 1}")" Width="32" Height="32" Class="rounded-lg"/>
                             <MudText Typo="Typo.h5">@(State.Host?.Name ?? "N/A")</MudText>
                         </MudStack>
                     </MudCardContent>

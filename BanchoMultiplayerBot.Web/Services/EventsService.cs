@@ -51,7 +51,7 @@ public class EventsService(AppConfiguration appConfiguration, MessageService mes
                 return;
             }
             
-            lobbyService.Lobbies[lobbyId].Players?.Add(player);
+            lobbyService.Lobbies.First(x => x.Id == lobbyId).Players?.Add(player);
             lobbyService.TriggerLobbyPageRefresh();
         });
         
@@ -62,7 +62,7 @@ public class EventsService(AppConfiguration appConfiguration, MessageService mes
                 return;
             }
             
-            lobbyService.Lobbies[lobbyId].Players?.RemoveAll(x => x.Name == player.Name);
+            lobbyService.Lobbies.First(x => x.Id == lobbyId).Players?.RemoveAll(x => string.Equals(x.Name.Replace(' ', '_'), player.Name.Replace(' ', '_'), StringComparison.InvariantCultureIgnoreCase));
             lobbyService.TriggerLobbyPageRefresh();
         });
         
