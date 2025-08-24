@@ -50,8 +50,12 @@ public class EventsService(AppConfiguration appConfiguration, MessageService mes
             {
                 return;
             }
+
+            var lobbyState = lobbyService.Lobbies.First(x => x.Id == lobbyId);
             
-            lobbyService.Lobbies.First(x => x.Id == lobbyId).Players?.Add(player);
+            lobbyState.Players?.Add(player);
+            lobbyState.PlayerCount = lobbyState.Players!.Count;
+            
             lobbyService.TriggerLobbyPageRefresh();
         });
         
@@ -61,8 +65,12 @@ public class EventsService(AppConfiguration appConfiguration, MessageService mes
             {
                 return;
             }
+
+            var lobbyState = lobbyService.Lobbies.First(x => x.Id == lobbyId);
             
-            lobbyService.Lobbies.First(x => x.Id == lobbyId).Players?.RemoveAll(x => string.Equals(x.Name.Replace(' ', '_'), player.Name.Replace(' ', '_'), StringComparison.InvariantCultureIgnoreCase));
+            lobbyState.Players?.RemoveAll(x => string.Equals(x.Name.Replace(' ', '_'), player.Name.Replace(' ', '_'), StringComparison.InvariantCultureIgnoreCase));
+            lobbyState.PlayerCount = lobbyState.Players!.Count;
+            
             lobbyService.TriggerLobbyPageRefresh();
         });
         
@@ -73,6 +81,10 @@ public class EventsService(AppConfiguration appConfiguration, MessageService mes
                 return;
             }
 
+            // Insanely (!) stupid workaround because I can't bother fixing it properly
+            // in the bot. :-)
+            await Task.Delay(500);
+            
             await lobbyService.GetLobbyExtended(lobbyId);
             lobbyService.TriggerLobbyPageRefresh();
         });

@@ -109,7 +109,7 @@
                                 {
                                     <MudStack Row="true" AlignItems="AlignItems.Center">
                                         <MudImage Src=@($"https://s.ppy.sh/a/{player.OsuId ?? 1}") Width="48" Height="48" Class="rounded-lg" Elevation="2"/>
-                                        <MudLink Color="Color.Default" Typo="Typo.body1" Href="@($"https://osu.ppy.sh/users/{player.OsuId}")">@player.Name</MudLink>
+                                        <MudLink Color="Color.Default" Typo="Typo.body1" Href="@($"https://osu.ppy.sh/users/{player.OsuId}")" Target="_blank">@player.Name</MudLink>
                                     </MudStack>
                                 }
                             }
